@@ -49,13 +49,13 @@ class UserDefaultsLoader: Loader {
 class NetworkLoader: Loader {
   func loadAnimals(_ callback: @escaping (Result<[String], Error>) -> Void) {
     let task = URLSession.shared.dataTask(with: URL(string: "https://www.animalsgalore.com/api")!) { (maybeData, _, maybeError) in
-      if let _ = maybeError {
-        preconditionFailure("Error occurred when downloading data")
+      if let error = maybeError {
+        callback(.failure(error))
       } else if let data = maybeData {
         let animals = try! JSONDecoder().decode([String].self, from: data)
         callback(.success(animals))
       } else {
-        preconditionFailure("No animals")
+        callback(.failure(NoAnimalsError()))
       }
     }
     task.resume()

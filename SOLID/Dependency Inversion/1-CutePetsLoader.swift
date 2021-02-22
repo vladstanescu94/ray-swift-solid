@@ -34,6 +34,34 @@ import Foundation
 
 let petsApi = URL(string: "api.awesomepetpics.com/v1/best-pets")!
 
+protocol Network {
+    func load(from url: URL, result: @escaping (Result<[String], Error>) -> Void)
+}
+
 class CutePetsLoader {
-  // Implemented in P1E05
+  
+    private let network: Network
+    
+    init(network: Network) {
+        self.network = network
+    }
+}
+
+class URLSessionNetwork: Network {
+    
+    func load(from url: URL, result: @escaping (Result<[String], Error>) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            if let data = data {
+                do {
+                    let pets = try JSONDecoder().decode([String].self, from: data)
+                    result(.success(pets))
+                } catch {
+                    result(.failure(error))
+                }
+            }
+            if let error = error {
+                result(.failure(error))
+            }
+        }
+    }
 }

@@ -37,6 +37,9 @@ class MultipleResponsibilityViewController: UIViewController {
   let data = ["Dog", "Cat", "Octopus", "Skunk", "Squirrel"]
   let imageNames = ["dog", "cat", "octopus", "skunk", "squirrel"]
   private var selectedIndex: IndexPath!
+    private lazy var navDelegate = NavigationDelegate { () -> UIViewControllerAnimatedTransitioning in
+        return ShowAnimalTransition(selectedIndex: self.selectedIndex)
+    }
 
   @IBOutlet weak var tableView: UITableView!
 
@@ -44,7 +47,7 @@ class MultipleResponsibilityViewController: UIViewController {
     super.viewDidLoad()
     tableView.dataSource = self
     tableView.delegate = self
-    navigationController?.delegate = self
+    navigationController?.delegate = navDelegate
   }
 
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -81,22 +84,31 @@ extension MultipleResponsibilityViewController: UITableViewDelegate {
 
 }
 
-extension MultipleResponsibilityViewController: UINavigationControllerDelegate {
+class NavigationDelegate:NSObject, UINavigationControllerDelegate {
+    init(showTransition: @escaping () -> UIViewControllerAnimatedTransitioning) {
+        self.showTransition = showTransition
+    }
+    
+    private let showTransition: () -> UIViewControllerAnimatedTransitioning
 
   func navigationController(_ navigationController: UINavigationController,
                             animationControllerFor operation: UINavigationController.Operation,
                             from fromVC: UIViewController,
                             to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-    if fromVC == self && toVC is AnimalDetailsViewController {
-      return self
+    if fromVC is MultipleResponsibilityViewController && toVC is AnimalDetailsViewController {
+      return showTransition()
     }
     return nil
   }
 
 }
 
-extension MultipleResponsibilityViewController: UIViewControllerAnimatedTransitioning {
-
+class ShowAnimalTransition: NSObject, UIViewControllerAnimatedTransitioning {
+  init(selectedIndex: IndexPath) {
+    self.selectedIndex = selectedIndex
+  }
+    
+  private let selectedIndex: IndexPath
   func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
     return 0.2
   }

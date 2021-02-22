@@ -39,13 +39,19 @@ class SingleResponsibilityViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-
+    layoutTableView()
+    setTableViewData()
+  }
+    
+  private func layoutTableView() {
     view.addSubview(tableView)
     tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
     tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
     tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
     tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-
+  }
+    
+  private func setTableViewData() {
     let data = ["Dog", "Cat", "Peacock", "Goat", "Raccoon"]
     let adapter = TableDataAdapter(data: data)  { animal in
       print("Your preferred animal is \(animal)")
@@ -54,7 +60,6 @@ class SingleResponsibilityViewController: UIViewController {
     tableView.dataSource = adapter
     tableView.delegate = adapter
   }
-  
 }
 
 private class TableDataAdapter: NSObject, UITableViewDataSource, UITableViewDelegate {

@@ -77,3 +77,14 @@ enum AnalyticsEvent {
     }
   }
 }
+
+struct ScreenView {
+    let name: String
+    let additionalProperties: [String: String]?
+    
+    static let mainScreen = ScreenView(name: "main", additionalProperties: nil)
+    
+    static func viewedAnimal(_ animal: String) -> ScreenView {
+        ScreenView(name: "animal-view", additionalProperties: ["animal": animal])
+    }
+}

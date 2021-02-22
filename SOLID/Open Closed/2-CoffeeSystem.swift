@@ -31,34 +31,39 @@ import Foundation
 class CoffeeApp {
 
   func makeCoffeeForMe() {
-    let coffeeMaker = FilterCoffeeMaker()
-    coffeeMaker.fill(with: Bean.arabica.grind())
-    coffeeMaker.brew()
+    let coffeeMaker: CoffeeMaker = BeanToCupMachine()
+    coffeeMaker.prepare(with: .arabica)
+    coffeeMaker.make()
   }
 
 }
 
-class FilterCoffeeMaker {
+protocol CoffeeMaker {
+    func prepare(with beans: Bean)
+    func make()
+}
+
+class FilterCoffeeMaker: CoffeeMaker {
+    func prepare(with beans: Bean) {
+        cafetiere.groundCoffee = beans.grind()
+    }
+    
+    func make() {
+        cafetiere.plunge()
+    }
+    
 
   private let cafetiere = Cafetiere()
 
-  func fill(with groundCoffee: GroundCoffee) {
-    cafetiere.groundCoffee = groundCoffee
-  }
-
-  func brew() {
-    cafetiere.plunge()
-  }
-
 }
 
-class BeanToCupMachine {
+class BeanToCupMachine: CoffeeMaker {
+    func prepare(with beans: Bean) {
+        self.beans = beans
+    }
+    
 
   private var beans: Bean?
-
-  func add(_ beans: Bean) {
-    self.beans = beans
-  }
 
   func make() {
     guard let groundCoffee = beans?.grind() else {

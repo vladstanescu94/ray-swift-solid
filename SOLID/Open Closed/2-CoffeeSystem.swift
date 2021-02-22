@@ -31,7 +31,7 @@ import Foundation
 class CoffeeApp {
 
   func makeCoffeeForMe() {
-    let coffeeMaker: CoffeeMaker = BeanToCupMachine()
+    let coffeeMaker: CoffeeMaker = EspressoMachine()
     coffeeMaker.prepare(with: .arabica)
     coffeeMaker.make()
   }
@@ -75,7 +75,18 @@ class BeanToCupMachine: CoffeeMaker {
 
 }
 
-class EspressoMachine {
+class EspressoMachine: CoffeeMaker {
+    
+    private var groundCoffee: GroundCoffee!
+    
+    func prepare(with beans: Bean) {
+        groundCoffee = beans.grind()
+    }
+    
+    func make() {
+        make(from: groundCoffee)
+    }
+    
 
   func make(from groundCoffee: GroundCoffee) {
     // yum, our coffee is nearly ready

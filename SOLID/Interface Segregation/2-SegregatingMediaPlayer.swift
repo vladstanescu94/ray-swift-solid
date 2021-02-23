@@ -40,12 +40,39 @@ struct NotSupported: Error {
 protocol MediaPlayer {
   func play()
   func pause()
-  func seek(to time: Measurement<UnitDuration>) throws
-  func download() throws -> URLSessionDataTask
-  func stream() throws -> AVPlayerItem
 }
 
-class MP4: MediaPlayer {
+extension MediaPlayer {
+    var canDownload: Bool {
+        self is Downloadable
+    }
+}
+
+protocol Downloadable {
+    func download() throws -> URLSessionDataTask
+}
+
+extension MediaPlayer {
+    var canSeek: Bool {
+        self is Seekable
+    }
+}
+
+protocol Seekable {
+    func seek(to time: Measurement<UnitDuration>) throws
+}
+
+extension MediaPlayer {
+    var canStream: Bool {
+        self is Streamable
+    }
+}
+
+protocol Streamable {
+    func stream() throws -> AVPlayerItem
+}
+
+class MP4: MediaPlayer, Downloadable, Streamable {
   
   private let url: URL
   
@@ -61,10 +88,6 @@ class MP4: MediaPlayer {
     // pause the content
   }
   
-  func seek(to time: Measurement<UnitDuration>) throws {
-    throw NotSupported()
-  }
-  
   func download() -> URLSessionDataTask {
     // produce a task to download the content
     return URLSession.shared.dataTask(with: url)
@@ -77,7 +100,7 @@ class MP4: MediaPlayer {
   
 }
 
-class HLS: MediaPlayer {
+class HLS: MediaPlayer, Seekable, Streamable {
   
   private let url: URL
   
@@ -101,9 +124,4 @@ class HLS: MediaPlayer {
     // set up the item to stream
     return AVPlayerItem(url: url)
   }
-  
-  func download() throws -> URLSessionDataTask {
-    throw NotSupported()
-  }
-  
 }
